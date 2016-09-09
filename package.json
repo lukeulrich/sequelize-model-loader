@@ -1,0 +1,27 @@
+{
+  "name": "sequelize-model-loader",
+  "version": "1.0.0",
+  "description": "Simplifies the loading of sequelize model files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukeulrich/sequelize-model-loader.git"
+  },
+  "keywords": [
+    "sequelize",
+    "models"
+  ],
+  "author": "Luke Ulrich <lukeulrich@users.noreply.github.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lukeulrich/sequelize-model-loader/issues"
+  },
+  "homepage": "https://github.com/lukeulrich/sequelize-model-loader#readme",
+  "dependencies": {
+    "inflection": "^1.10.0",
+    "lodash.defaultsdeep": "^4.6.0"
+  }
+}
