@@ -34,10 +34,10 @@ module.exports = function(directory, sequelize, options = {}) {
 		let modelName = nameForDefinition(definition, modelFileName)
 		setupDefinition(definition, modelName)
 
-		let model = models[modelName] = sequelize.define(modelName, definition.fields, definition.params)
+		if (!definition.params.schema && options.schema)
+			definition.params.schema = options.schema
 
-		if (options.schema && !definition.params.schema)
-			model.schema = options.schema
+		let model = models[modelName] = sequelize.define(modelName, definition.fields, definition.params)
 
 		if (definition.params.noPrimaryKey)
 			model.removeAttribute('id')
