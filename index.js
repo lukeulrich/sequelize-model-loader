@@ -42,6 +42,10 @@ module.exports = function(directory, sequelize, options = {}) {
 		if (definition.params.noPrimaryKey)
 			model.removeAttribute('id')
 
+		// Expose the definition as a static member on the Model class; most useful for
+		// introspection (e.g. generating documentation)
+		model.definition = definition
+
 		if (options.logger)
 			options.logger.info({modelName, table: model.getTableName().toString()}, `Loaded model: ${modelName} (${model.getTableName().toString()} table)`)
 	})
