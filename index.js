@@ -1,12 +1,12 @@
 'use strict'
 
 // Core
-const fs = require('fs'),
-	path = require('path')
+const fs = require('fs')
+const path = require('path')
 
 // Vendor
-const defaultsDeep = require('lodash.defaultsdeep'),
-	inflection = require('inflection')
+const defaultsDeep = require('lodash.defaultsdeep')
+const inflection = require('inflection')
 
 // Constants
 const kModelFileNameSuffix = '.model.js' // All files ending with this are treated as models
@@ -21,26 +21,36 @@ const kModelFileNameSuffix = '.model.js' // All files ending with this are treat
  * @returns {Object} - set of models that have been loaded
  */
 module.exports = function(directory, sequelize, options = {}) {
-	let models = {}
+	const models = {}
 
 	getModelFileNames(directory)
 	.forEach((modelFileName) => {
-		let modelFile = path.resolve(directory, modelFileName),
-			// eslint-disable-next-line global-require
-			definition = require(modelFile)(sequelize.Sequelize, models, options.context)
+		const modelFile = path.resolve(directory, modelFileName)
+		// eslint-disable-next-line global-require
+		const definition = require(modelFile)(sequelize.Sequelize, models, options.context)
 		if (!definition)
 			throw new Error(`Missing return value from model file, ${modelFileName}`)
 
-		let modelName = nameForDefinition(definition, modelFileName)
+		const modelName = nameForDefinition(definition, modelFileName)
 		setupDefinition(definition, modelName)
 
 		if (!definition.params.schema && options.schema)
 			definition.params.schema = options.schema
 
-		let model = models[modelName] = sequelize.define(modelName, definition.fields, definition.params)
+		const model = models[modelName] = sequelize.define(modelName, definition.fields, definition.params)
 
 		if (definition.params.noPrimaryKey)
 			model.removeAttribute('id')
+
+		if (definition.classMethods) {
+			for (const [methodName, methodFn] of Object.entries(definition.classMethods))
+				model[methodName] = methodFn;
+		}
+
+		if (definition.instanceMethods) {
+			for (const [methodName, methodFn] of Object.entries(definition.instanceMethods))
+				model.prototype[methodName] = methodFn;
+		}
 
 		// Expose the definition as a static member on the Model class; most useful for
 		// introspection (e.g. generating documentation)
@@ -68,7 +78,7 @@ function nameFromFileName(modelFileName) {
 }
 
 function setupDefinition(definition, modelName) {
-	let defaultParams = {
+	const defaultParams = {
 		tableName: defaultTableName(modelName)
 	}
 
